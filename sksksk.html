@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kartu Ulang Tahun Interaktif 3D</title>
+    <style>
+        /* ======================================= */
+        /* === 1. CSS UTAMA (Design & Layout) === */
+        /* ======================================= */
+        body {
+            font-family: 'Montserrat', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #f0e6ff 0%, #d4e7ff 100%);
+            margin: 0;
+            perspective: 1000px; /* Jarak pandang untuk 3D */
+            overflow-x: hidden;
+        }
+
+        /* Container 3D Card */
+        .card-container {
+            width: 320px;
+            height: 480px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 1s cubic-bezier(0.25, 0.46, 0.45, 0.94); /* Smooth 3D animation */
+        }
+
+        /* Class untuk memutar kartu (diaktifkan oleh JS) */
+        .card-container.flipped {
+            transform: rotateY(180deg);
+        }
+
+        /* Sisi Depan dan Belakang Kartu */
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden; /* Menyembunyikan sisi belakang saat tidak berputar */
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
+            text-align: center;
+        }
+
+        /* Sisi Depan */
+        .front-face {
+            background: linear-gradient(45deg, #ffc0cb, #f08080); /* Pink Gradient */
+            color: white;
+            z-index: 2;
+        }
+
+        /* Sisi Belakang */
+        .back-face {
+            background-color: #ffffff;
+            color: #333;
+            transform: rotateY(180deg); /* Posisikan di belakang */
+            padding: 30px;
+            text-align: left;
+            overflow-y: auto;
+        }
+
+        /* Elemen Depan */
+        .front-face h1 {
+            font-size: 3em;
+            margin-bottom: 5px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .front-face p {
+            font-size: 1.5em;
+            font-weight: 600;
+        }
+
+        /* Tombol */
+        .flip-button {
+            margin-top: 20px;
+            padding: 10px 25px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .flip-button:hover {
+            background-color: #45a049;
+            transform: scale(1.05);
+        }
+        
+        /* Elemen Belakang */
+        .back-face h2 {
+            color: #ff6347; /* Tomat */
+            border-bottom: 3px solid #ff6347;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+        }
+
+        .message-content {
+            font-size: 1.1em;
+            line-height: 1.6;
+        }
+
+        /* === 2. CSS Animasi Kembang Api (Confetti) === */
+        .fireworks {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none; /* Penting agar tidak menghalangi interaksi */
+            z-index: 1000;
+        }
+
+        .spark {
+            position: absolute;
+            width: 5px;
+            height: 5px;
+            background: #ffd700; /* Emas */
+            border-radius: 50%;
+            animation: explode 1s ease-out forwards;
+            opacity: 0;
+        }
+
+        @keyframes explode {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(0); opacity: 0; transform: translate(var(--dx), var(--dy)); }
+        }
+
+        /* === 3. Responsif Sederhana === */
+        @media (max-width: 600px) {
+            .card-container {
+                width: 90%;
+                height: 550px; /* Lebih tinggi di HP */
+            }
+            .front-face h1 {
+                font-size: 2.5em;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="birthdayCard" class="card-container">
+        
+        <div class="card-face front-face">
+            <h1>HAPPY BIRTHDAY! 🥳</h1>
+            <p>Untuk Althaaf Fawaaz Zalfa</p>Selamat ulang tahun! 
+            <img src="https://tough-scarlet-umajzqksbn-wcfsw04p7r.edgeone.dev/Proyek%20Baru%2028%20[9F856ED].png" alt="Hadiah Ulang Tahun" style="width: 150px; height: 150px; margin: 20px 0; border-radius: 10px; box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);">
+            
+            <button class="flip-button" onclick="flipCard()">Buka Kartu & Lihat Pesan! ✨</button>
+        </div>
+
+        <div class="card-face back-face">
+            <h2>Pesan Rahasia!</h2>
+            <div class="message-content">
+                <p>Haii Althaaf Fawaaz Zalfa,</p>
+                <p>Selamat ulang tahun! Hari ini adalah harimu. Semoga tahun ini menjadi tahun penuh keberuntungan dan selalu bahagia. Semoga impian kamu cepet tercapai. Jangan dengerin kata orang. Jaga pola makanmu yang teratur, jangan tidur malem², udh itu aja.
+                 Tetap menjadi versi terbaik dari dirimu! Semua yang terbaik untukmu.</p>
+                <p>Maaf juga karena aku banyak salahnya, makasih juga buat semuanya.Maaf cuma bisa ngasih ini:.</p>
+                <p style="margin-top: 25px; font-weight: bold; text-align: right;">— :(</p>
+            </div>
+            <button class="flip-button" onclick="flipCard()">Tutup Kartu</button>
+        </div>
+    </div>
+    
+    <div id="fireworksContainer" class="fireworks"></div>
+
+    <script>
+        const card = document.getElementById('birthdayCard');
+        const fireworksContainer = document.getElementById('fireworksContainer');
+
+        // Fungsi untuk memutar kartu 3D
+        function flipCard() {
+            card.classList.toggle('flipped');
+            // Jika kartu dibuka (flipped), luncurkan kembang api
+            if (card.classList.contains('flipped')) {
+                launchFireworks(5); // Luncurkan 5 kali kembang api saat dibuka
+            }
+        }
+
+        // Fungsi untuk menciptakan efek kembang api
+        function createSpark(x, y) {
+            const spark = document.createElement('div');
+            spark.classList.add('spark');
+            
+            // Tentukan arah dan jarak ledakan acak
+            const angle = Math.random() * 2 * Math.PI;
+            const distance = Math.random() * 100 + 50; // Jarak 50px hingga 150px
+            const dx = Math.cos(angle) * distance;
+            const dy = Math.sin(angle) * distance;
+            
+            spark.style.left = `${x}px`;
+            spark.style.top = `${y}px`;
+            spark.style.setProperty('--dx', `${dx}px`);
+            spark.style.setProperty('--dy', `${dy}px`);
+            
+            // Set warna acak
+            spark.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 70%)`;
+
+            fireworksContainer.appendChild(spark);
+
+            // Hapus elemen setelah animasi selesai
+            setTimeout(() => {
+                spark.remove();
+            }, 1000);
+        }
+
+        function launchFireworks(count) {
+            for (let j = 0; j < count; j++) {
+                // Posisi kembang api di tengah layar
+                const centerX = window.innerWidth / 2;
+                const centerY = window.innerHeight / 2;
+                
+                // Sedikit acak posisi di sekitar tengah
+                const randomX = centerX + (Math.random() - 0.5) * 100;
+                const randomY = centerY + (Math.random() - 0.5) * 100;
+
+                // Ciptakan 30 percikan untuk setiap ledakan
+                for (let i = 0; i < 30; i++) {
+                    createSpark(randomX, randomY);
+                }
+            }
+        }
+        
+        // Panggil kembang api saat halaman dimuat
+        window.onload = () => {
+             launchFireworks(3);
+        };
+    </script>
+</body>
+</html>
